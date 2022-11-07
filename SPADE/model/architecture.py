@@ -4,7 +4,7 @@ from torch.nn.utils import spectral_norm
 
 
 class SPADE(nn.Module):
-    def __init__(self, featureSize, styleSize=1) -> None:
+    def __init__(self, featureSize, styleSize) -> None:
         super(SPADE, self).__init__()
         self.bn = nn.BatchNorm2d(featureSize, affine=False) # affine=False
         self.convStyle = nn.Sequential(
@@ -26,24 +26,24 @@ class SPADE(nn.Module):
 
 
 class SPADEResBlk(nn.Module):
-    def __init__(self, featureSize, k) -> None:
+    def __init__(self, featureSize, k, styleSize) -> None:
         super(SPADEResBlk, self).__init__()
 
         # 直接輸出k 還是要 (in+k)/2 ???
         self.block1 = nn.Sequential(
-            SPADE(featureSize), 
+            SPADE(featureSize, styleSize), 
             nn.ReLU(inplace=True), 
             spectral_norm(nn.Conv2d(featureSize, k, 3, 1, 1)),
         )
 
         self.block2 = nn.Sequential(
-            SPADE(k), 
+            SPADE(k, styleSize), 
             nn.ReLU(inplace=True), 
             spectral_norm(nn.Conv2d(k, k, 3, 1, 1)),
         )
 
         self.blockSkip = nn.Sequential(
-            SPADE(featureSize), 
+            SPADE(featureSize, styleSize), 
             nn.ReLU(inplace=True), 
             spectral_norm(nn.Conv2d(featureSize, k, 3, 1, 1)),
         )

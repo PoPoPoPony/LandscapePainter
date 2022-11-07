@@ -4,7 +4,7 @@ from torch.nn.utils import spectral_norm
 
 
 class Generator(nn.Module):
-    def __init__(self, ) -> None:
+    def __init__(self, styleSize) -> None:
         super(Generator, self).__init__()
 
         self.l1 = nn.Linear(256, 16384) # 加入spectral_norm ???
@@ -21,7 +21,7 @@ class Generator(nn.Module):
 
         models = []
         for i in range(len(outputSizes)-1):
-            models.append(SPADEResBlk(outputSizes[i], outputSizes[i+1]))
+            models.append(SPADEResBlk(outputSizes[i], outputSizes[i+1], styleSize))
             models.append(nn.Upsample(scale_factor=2, mode='nearest'))
 
         self.models = nn.Sequential(*models)

@@ -4,11 +4,11 @@ import torch
 
 
 class Discriminator(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, styleSize) -> None:
         super(Discriminator, self).__init__()
 
         self.model = nn.Sequential(
-            spectral_norm(nn.Conv2d(3+1, 64, 4, 2, 1)),
+            spectral_norm(nn.Conv2d(3+styleSize, 64, 4, 2, 1)),
             nn.LeakyReLU(0.2, inplace=True),
             spectral_norm(nn.Conv2d(64, 128, 4, 2, 1)),
             nn.InstanceNorm2d(128),
