@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 from torch.optim import Adam
 from model.loss import GANloss
-from utils import writeCheckPt
+from writer import Writer
 import glob
 
 
@@ -23,10 +23,11 @@ import glob
 
 
 def init_weights(m):
-    classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
+    print(m)
+    if isinstance(m, nn.Conv2d):
         nn.init.normal_(m.weight.data, 0.0, 0.02)
-    elif classname.find('BatchNorm') != -1:
+    elif isinstance(m, nn.BatchNorm2d):
+        print(m)
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
 
@@ -46,9 +47,9 @@ if __name__ == '__main__':
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    G = Generator(151).cuda()
+    G = Generator(151).to(device)
     G.apply(init_weights)
-    D = Discriminator(151).cuda()
+    D = Discriminator(151).to(device)
     D.apply(init_weights)
     lr_G = 0.0001
     lr_D = 0.0004
@@ -74,14 +75,15 @@ if __name__ == '__main__':
         start_ep = 0
 
     EPOCHES = 1
-    G.train()
-    D.train()
     imgs = []
     G_losses = []
     D_losses = []
     criterion = GANloss(fakeLabel=0.0, realLabel=1.0)
+    writer = Writer(rootPath='.')
 
     for epoch in range(start_ep, EPOCHES):
+        G.train()
+        D.train()
         for i, data in enumerate(trainLoader):
             G_opt.zero_grad()
             D_opt.zero_grad()
@@ -112,8 +114,14 @@ if __name__ == '__main__':
             G_losses.append(loss_G.detach().cpu())
             D_losses.append(loss_D.detach().cpu())
 
-        writeCheckPt("CheckPt", epoch, G, "G")
-        writeCheckPt("CheckPt", epoch, D, "D")
+        writer.writeCheckPt(epoch, G, "G")
+        writer.writeCheckPt(epoch, D, "D")
+
+        # G.eval()
+        # with torch.no_grad:
+        #     annoTensor = trainLoader[0][1].to('cpu')
+
+        # writer.writeResult(epoch, )
 
         
 

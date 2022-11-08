@@ -31,16 +31,3 @@ def convertAnnoTensor(annoTensor):
             oneHotEncondingTensor[c, i, j]=1
         
     return oneHotEncondingTensor
-
-
-def writeCheckPt(filePath, epoch, model, modelType):
-    if modelType == 'G':
-        filePath = os.path.join(filePath, 'Generator')
-    elif modelType == 'D':
-        filePath = os.path.join(filePath, 'Discriminator')
-    
-    epoch = str(epoch).zfill(3)
-    os.makedirs(filePath, exist_ok=True)
-    fileName = f"epoche{epoch}.pt"
-    model.save(model.state_dict(), fileName)
-    
