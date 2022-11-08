@@ -6,7 +6,7 @@ from torch.nn.utils import spectral_norm
 class SPADE(nn.Module):
     def __init__(self, featureSize, styleSize) -> None:
         super(SPADE, self).__init__()
-        self.bn = nn.BatchNorm2d(featureSize, affine=False) # affine=False
+        self.bn = nn.BatchNorm2d(featureSize) # affine=False
         self.convStyle = nn.Sequential(
             spectral_norm(nn.Conv2d(styleSize, 128, 3, 1, 1)),
             nn.ReLU(inplace=True)

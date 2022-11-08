@@ -4,13 +4,13 @@ import torch.nn.functional as F
 
 
 class GANloss(nn.Module):
-    def __init__(self, realLabel, fakeLabel, tensor) -> None:
+    def __init__(self, realLabel, fakeLabel, tensor=torch.FloatTensor) -> None:
         super(GANloss, self).__init__()
 
         self.realLabel = realLabel
         self.fakeLabel = fakeLabel
         self.zero_tensor = tensor
-        self.Tensor = torch.FloatTensor
+        self.Tensor = tensor
 
     def get_zero_tensor(self, input):
         if self.zero_tensor is None:
@@ -34,13 +34,14 @@ class GANloss(nn.Module):
 
     
     def getAdversarialLoss(self, input, target_is_real):
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
         if target_is_real:
             gtTensor = torch.FloatTensor(1).fill_(self.realLabel)
         else:
             gtTensor = torch.FloatTensor(1).fill_(self.fakeLabel)
 
         gtTensor.requires_grad_(False)
-        gtTensor = gtTensor.expand_as(input)
+        gtTensor = gtTensor.expand_as(input).to(device)
         loss = F.binary_cross_entropy_with_logits(input, gtTensor)
 
         return loss
