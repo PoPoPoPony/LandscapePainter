@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import Adam
-from model.loss import GANloss
+from model.loss import GANloss, GANLoss2
 from writer import Writer
 import glob
 from tqdm import tqdm
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     # summary(S, [(3, 512, 512), (1, 512, 512)])
 
     ds = ADE20KDS(dataPath="ADE20K Outdoors")
-    trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
+    trainLoader = DataLoader(ds, batch_size=10, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -73,11 +73,12 @@ if __name__ == '__main__':
     else:
         start_ep = 0
 
-    EPOCHES = 1
+    EPOCHES = 50
     imgs = []
     G_losses = []
     D_losses = []
     criterion = GANloss(fakeLabel=0.0, realLabel=1.0)
+    criterion2 = GANLoss2()
     writer = Writer(rootPath='.')
     imgList = []
 
@@ -97,17 +98,21 @@ if __name__ == '__main__':
             # sample latentVector from N(0, 1)
             latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
             fakeImg = G(latentVector, anno)
-            pred_fake = D(fakeImg, anno)
+            pred_real, pred_fake = D(img, fakeImg, anno)
+            pred_real2 = pred_real.clone().detach().requires_grad_(True)
+            pred_fake2 = pred_fake.clone().detach().requires_grad_(True)
 
-            loss_G = criterion(pred_fake, True, lossMode='ad')
+            # loss_G = criterion(pred_fake, True, lossMode='ad')
+            loss_G = criterion2(pred_fake, True,)
             loss_G.backward(retain_graph=True)
             G_opt.step()
 
-
             D_opt.zero_grad()
-            loss_D_fake = criterion(pred_fake.detach(), False, lossMode='ad')
-            pred_real = D(img, anno)
-            loss_D_true = criterion(pred_real, True, lossMode='ad')
+            # loss_D_fake = criterion(pred_fake.detach(), False, lossMode='ad')
+            loss_D_fake = criterion2(pred_fake2, False)
+
+            # loss_D_true = criterion(pred_real, True, lossMode='ad')
+            loss_D_true = criterion2(pred_real2, True)
             loss_D = loss_D_fake + loss_D_true
 
             loss_D.backward()
@@ -116,20 +121,21 @@ if __name__ == '__main__':
             G_losses.append(loss_G.detach().to('cpu'))
             D_losses.append(loss_D.detach().to('cpu'))
 
-            if i%10==0:
+            if i%10==0 and i>5:
                 writer.writeLoss("G", loss_G.detach().to('cpu').item())
                 writer.writeLoss("D", loss_D.detach().to('cpu').item())
+                G.eval()
+                with torch.no_grad():
+                    for i in range(len(imgList[-5:])):
+                        latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
+                        fakeImg = G(latentVector, imgList[i]).detach().to('cpu')
+                        writer.writeResult(epoch, fakeImg, i)
+
 
         writer.writeCheckPt(epoch, G, "G")
         writer.writeCheckPt(epoch, D, "D")
 
-        G.eval()
-        with torch.no_grad():
-            for i in range(len(imgList)):
-                # annoTensor = anno.detach().to('cpu')
-                latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
-                fakeImg = G(latentVector, imgList[i]).detach().to('cpu')
-                writer.writeResult(epoch, fakeImg, i)
+        
 
         
 

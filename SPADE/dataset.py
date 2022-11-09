@@ -4,9 +4,10 @@ from torch.utils.data import Dataset
 from PIL import Image
 import glob
 import pandas as pd
-from utils import getTransforms, convertAnnoTensor
+from utils import getTransforms, convertAnnoTensor, ToOneHot
 from torch.nn.functional import one_hot
 import torch
+import numpy as np
 
 
 class ADE20KDS(Dataset):
@@ -34,18 +35,31 @@ class ADE20KDS(Dataset):
         img = Image.open(img)
         imgTensor = self.imgTransform(img)
 
+        # print image which is not RGB
+        if imgTensor.shape[0] != 3:
+            print(self.imgPaths[idx])
+
         anno = self.annoPaths[idx]
         anno = Image.open(anno)
-        annoTensor = self.annoTransform(anno)*255
-        annoTensor = annoTensor.type(torch.int64)
+        # if idx < 5:
+        #     anno.save(f"test{idx}.jpg")
+        
+
+        # print(anno)
+        annoTensor = self.annoTransform(anno)
+        annoTensor = annoTensor.type(torch.FloatTensor)
+        if annoTensor.shape[0] != 151:
+            print(self.imgPaths[idx])
+
+        # print(annoTensor.shape)
+        # print(annoTensor)
+        # print(annoTensor.shape)
+        # annoTensor = annoTensor.type(torch.int64)
         # annoTensor = torch.squeeze(annoTensor, 0)
-        # annoTensor = annoTensor.view(-1)
-        # print(annoTensor.shape)
-        # annoTensor = one_hot(annoTensor, num_classes=151)
-        # print(annoTensor.shape)
+
 
         # print(annoTensor)
         # exit(0)
-        annoTensor = convertAnnoTensor(annoTensor)
+        # annoTensor = convertAnnoTensor(annoTensor)
 
         return imgTensor, annoTensor

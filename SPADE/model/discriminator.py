@@ -22,7 +22,15 @@ class Discriminator(nn.Module):
             spectral_norm(nn.Conv2d(512, 1, 4, 1)),
         )
 
-    def forward(self, x, anno):
-        x = torch.cat((x, anno), dim=1)
-        x = self.model(x)
-        return x
+    def forward(self, realImg, fakeImg, anno):
+        fakeConcat = torch.cat([anno, fakeImg], dim=1)
+        realConcat = torch.cat([anno, realImg], dim=1)
+
+        fake_and_real = torch.cat([fakeConcat, realConcat], dim=0)
+        print(fake_and_real.shape)
+        pred = self.model(fake_and_real)
+
+        fake = pred[:pred.size(0) // 2]
+        real = pred[pred.size(0) // 2:]
+
+        return fake, real
