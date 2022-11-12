@@ -65,10 +65,13 @@ if __name__ == '__main__':
     D_pts = glob.glob("CheckPt/Discriminator/*.pt")
 
     if len(G_pts)>0:
+        # sort epoch by filename
+        G_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         G_pt = G_pts[-1]
         G.load_state_dict(torch.load(G_pt))
 
         D_pt = D_pts[-1]
+        D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
         start_ep = int(G_pt.split('.')[-2][-3:])

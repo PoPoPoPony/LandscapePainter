@@ -29,17 +29,15 @@ class Generator(nn.Module):
         self.leaky = nn.LeakyReLU(0.2, inplace=True)
         self.conv2 = spectral_norm(nn.Conv2d(64, 3, 3, padding=1))
         self.tanh = nn.Tanh()
+        self.newAnnoW, self.newAnnoH = self.computeLatentVectorSize(6)
 
 
-    def forward(self, x):
-        s = x
-        newAnnoW, newAnnoH = self.computeLatentVectorSize(6)
-        x = F.interpolate(x, size=(newAnnoH, newAnnoW))
+    def forward(self, input1):
+        s = input1
 
+        x = F.interpolate(s, size=(self.newAnnoH, self.newAnnoW))
         x = self.conv1(x)
  
-        # x = x.view(-1, 1024, 4, 4)
-
         for module in self.models:
             if type(module) == SPADEResBlk:
                 x = module(x, s)
