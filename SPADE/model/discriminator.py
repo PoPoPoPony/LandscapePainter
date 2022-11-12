@@ -39,26 +39,26 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
 
         self.seq1 = nn.Sequential(
-            spectral_norm(nn.Conv2d(3+styleSize, 64, 4, stride=2, padding=2)),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.Conv2d(3+styleSize, 64, 4, stride=2, padding=2),
+            nn.LeakyReLU(0.2, inplace=False),
         )
 
         self.seq2 = nn.Sequential(
             spectral_norm(nn.Conv2d(64, 128, 4, stride=2, padding=2)),
             nn.InstanceNorm2d(128),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, inplace=False),
         )
 
         self.seq3 = nn.Sequential(
             spectral_norm(nn.Conv2d(128, 256, 4, stride=2, padding=2)),
             nn.InstanceNorm2d(256),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, inplace=False),
         )
             
         self.seq4 = nn.Sequential(
             spectral_norm(nn.Conv2d(256, 512, 4, stride=1, padding=2)),
             nn.InstanceNorm2d(512),
-            nn.LeakyReLU(0.2, inplace=True),
+            nn.LeakyReLU(0.2, inplace=False),
         )
             
         self.lastConv = nn.Conv2d(512, 1, 4, stride=1, padding=2)
