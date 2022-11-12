@@ -27,16 +27,17 @@ class Generator(nn.Module):
         self.models = nn.Sequential(*models)
         self.lastSPADEResBlk = SPADEResBlk(128, 64, styleSize) # 因為最後一個沒有要upSample所以另外寫
         self.leaky = nn.LeakyReLU(0.2, inplace=True)
-        self.conv2 = spectral_norm(nn.Conv2d(64, 3, 3, padding=1))
+        self.conv2 = nn.Conv2d(64, 3, 3, padding=1) # 官方這邊沒加spectral_norm
         self.tanh = nn.Tanh()
         self.newAnnoW, self.newAnnoH = self.computeLatentVectorSize(6)
-
 
     def forward(self, input1):
         s = input1
 
         x = F.interpolate(s, size=(self.newAnnoH, self.newAnnoW))
         x = self.conv1(x)
+
+        
  
         for module in self.models:
             if type(module) == SPADEResBlk:
@@ -44,11 +45,10 @@ class Generator(nn.Module):
             else:
                 x = module(x)
 
-
+        
         x = self.lastSPADEResBlk(x, s)
         x = self.leaky(x)
         x = self.conv2(x)
-        x = self.tanh(x)
 
         return x
 

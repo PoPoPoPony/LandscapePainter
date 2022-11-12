@@ -6,6 +6,7 @@ from torchvision.models import vgg19
 class SPADE(nn.Module):
     def __init__(self, featureSize, styleSize) -> None:
         super(SPADE, self).__init__()
+
         self.bn = nn.BatchNorm2d(featureSize) # affine=False
         self.convStyle = nn.Sequential(
             spectral_norm(nn.Conv2d(styleSize, 128, 3, 1, 1)),
@@ -29,7 +30,7 @@ class SPADEResBlk(nn.Module):
     def __init__(self, featureSize, outputSize, styleSize) -> None:
         super(SPADEResBlk, self).__init__()
 
-        # 直接輸出k 還是要 (in+k)/2 ???
+        self.isSkip = (featureSize != outputSize)
         middleSize = min(featureSize, outputSize)
 
         self.block1 = nn.Sequential(
@@ -44,20 +45,23 @@ class SPADEResBlk(nn.Module):
             spectral_norm(nn.Conv2d(middleSize, outputSize, 3, 1, 1)),
         )
 
-        self.blockSkip = nn.Sequential(
-            SPADE(featureSize, styleSize), 
-            nn.LeakyReLU(0.2, inplace=True), 
-            spectral_norm(nn.Conv2d(featureSize, outputSize, 3, 1, 1, bias=False)),
-        )
+        if self.isSkip:
+            self.blockSkip = nn.Sequential(
+                SPADE(featureSize, styleSize), 
+                spectral_norm(nn.Conv2d(featureSize, outputSize, 1, bias=False)),
+            )
 
     def forward(self, x, s):
-        skip = self.forwardBlock(self.blockSkip, x, s)
+        if self.isSkip:
+            skip = self.forwardBlock(self.blockSkip, x, s)
+        else:
+            skip = x
 
         y = self.forwardBlock(self.block1, x, s)
         y = self.forwardBlock(self.block2, y, s)
         
-
-        return y+skip
+        y = y+skip
+        return y
 
 
     def forwardBlock(self, block, x, s):

@@ -13,7 +13,7 @@ from writer import Writer
 import glob
 from tqdm import tqdm
 from utils import convertAnnoTensor, concatImageAnno, devideFakeReal
-
+from matplotlib import pyplot as plt
 
 # def init_weights(m):
 #     if type(m) is nn.Linear:
@@ -37,10 +37,16 @@ if __name__ == '__main__':
     # summary(S, [(1024, 4, 4), (1, 512, 512)])
     # S = SPADEResBlk(1024, 1024).cuda()
     # summary(S, [(1024, 4, 4), (1, 512, 512)])
-    # S = Generator(151).cuda()
-    # summary(S, [(1, 256), (151, 512, 512)])
-    # S = Discriminator().cuda()
-    # summary(S, [(3, 512, 512), (1, 512, 512)])
+
+
+    # S = Generator(119).cuda()
+    # summary(S, (119, 256, 256))
+    # exit(0)
+
+
+    # S = MultiScaleDiscriminator(119).cuda()
+    # summary(S, (122, 256, 256))
+
 
     ds = ADE20KDS(dataPath="ADE20K Outdoors")
     trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
@@ -64,19 +70,32 @@ if __name__ == '__main__':
     G_pts = glob.glob("CheckPt/Generator/*.pt")
     D_pts = glob.glob("CheckPt/Discriminator/*.pt")
 
+    # G_pts = glob.glob("latest_net_G.pth")
+    # D_pts = glob.glob("latest_net_D.pth")
+
     if len(G_pts)>0:
         # sort epoch by filename
         G_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
+        
         G_pt = G_pts[-1]
+
+        # d = torch.load(G_pt)
+        # for i in d:
+        #     print(i)
+        # exit()
+
+
         G.load_state_dict(torch.load(G_pt))
 
         D_pt = D_pts[-1]
         D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
-        start_ep = int(G_pt.split('.')[-2][-3:])
+        # start_ep = int(G_pt.split('.')[-2][-3:])
+        start_ep=0
     else:
         start_ep = 0
+
 
     EPOCHES = 50
     imgs = []
@@ -93,6 +112,18 @@ if __name__ == '__main__':
         for i, data in tqdm(enumerate(trainLoader)):
             img = data[0].to(device)
             anno = data[1].to(device)
+
+            # a = anno[0].cpu().detach().numpy()
+            # plt.imshow(a[0])
+            # plt.show()
+
+            # b = img[0].cpu().detach().numpy()
+            # plt.imshow(b[0])
+            # plt.show()
+            # exit(0)
+
+
+
             anno = convertAnnoTensor(anno, styleSize)
 
             G_opt.zero_grad()
