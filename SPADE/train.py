@@ -43,7 +43,7 @@ if __name__ == '__main__':
     # summary(S, [(3, 512, 512), (1, 512, 512)])
 
     ds = ADE20KDS(dataPath="ADE20K Outdoors")
-    trainLoader = DataLoader(ds, batch_size=5, shuffle=False)
+    trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -52,8 +52,8 @@ if __name__ == '__main__':
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
     D.apply(init_weights)
-    lr_G = 0.0001
-    lr_D = 0.0004
+    lr_G = 0.0002
+    lr_D = 0.0002
     beta1 = 0
     beta2 = 0.999
 
@@ -85,7 +85,6 @@ if __name__ == '__main__':
     criterionGAN = GANLoss(fakeLabel=0.0, realLabel=1.0)
     criterionVGG = VGGLoss()
     writer = Writer(rootPath='.')
-    imgList = []
 
     for epoch in range(start_ep, EPOCHES):
         print(f"Epoches : {epoch+1} / {EPOCHES}")
@@ -95,11 +94,6 @@ if __name__ == '__main__':
             img = data[0].to(device)
             anno = data[1].to(device)
             anno = convertAnnoTensor(anno, styleSize)
-
-            # for demo
-            if i < 5:
-                with torch.no_grad():
-                    imgList.append(anno.detach())
 
             G_opt.zero_grad()
             # sample latentVector from N(0, 1)
@@ -153,10 +147,9 @@ if __name__ == '__main__':
                 with torch.no_grad():
                     writer.writeLoss("G", loss_G_sum.item())
                     writer.writeLoss("D", loss_D_sum.item())
-                    for i in range(len(imgList[-5:])):
-                        # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
-                        fakeImg = G(imgList[i]).detach().to('cpu')
-                        writer.writeResult(epoch, fakeImg, i)
+                    # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
+                    fakeImg = G(anno).detach().to('cpu')
+                    writer.writeResult(epoch, fakeImg, i)
 
 
         writer.writeCheckPt(epoch, G, "G")
