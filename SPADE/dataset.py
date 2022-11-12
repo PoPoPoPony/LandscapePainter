@@ -4,16 +4,16 @@ from torch.utils.data import Dataset
 from PIL import Image
 import glob
 import pandas as pd
-from utils import getTransforms, convertAnnoTensor
-from torch.nn.functional import one_hot
+from utils import getTransforms
 import torch
+import numpy as np
 
 
 class ADE20KDS(Dataset):
     def __init__(self, dataPath) -> None:
         self.imgPaths = glob.glob(f"{dataPath}/images/*/*.jpg")
-        self.annoPaths = glob.glob(f"{dataPath}/annotations/*/*.png")
-        df = pd.read_csv(f"{dataPath}/objectInfo150.csv", encoding="UTF-8")
+        self.annoPaths = glob.glob(f"{dataPath}/annotations2/*.png")
+        df = pd.read_csv(f"{dataPath}/objectInfo119.csv", encoding="UTF-8")
         idxs = df['Idx'].to_list()
         names = []
         for name in df['Name'].to_list():
@@ -32,20 +32,19 @@ class ADE20KDS(Dataset):
     def __getitem__(self, idx):
         img = self.imgPaths[idx]
         img = Image.open(img)
+        img = img.convert('RGB') # by NVLab
         imgTensor = self.imgTransform(img)
+
+        # print image which is not RGB
+        if imgTensor.shape[0] != 3:
+            print(self.imgPaths[idx])
 
         anno = self.annoPaths[idx]
         anno = Image.open(anno)
-        annoTensor = self.annoTransform(anno)*255
 
-        # annoTensor = torch.squeeze(annoTensor, 0)
-        # annoTensor = annoTensor.view(-1)
-        # print(annoTensor.shape)
-        # annoTensor = one_hot(annoTensor, num_classes=151)
-        # print(annoTensor.shape)
+        annoTensor = self.annoTransform(anno)*255.0
+        if annoTensor.shape[0] != 1:
+            print(self.imgPaths[idx])
 
-        # print(annoTensor)
-        # exit(0)
-        annoTensor = convertAnnoTensor(annoTensor)
 
         return imgTensor, annoTensor

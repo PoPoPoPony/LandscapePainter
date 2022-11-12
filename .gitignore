@@ -1,5 +1,8 @@
 
 ADE20K Outdoors/
+CheckPt/
+images/
+loss/
 
 
 
@@ -139,3 +142,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/SPADE/ADE20K_2021_17_01
+.vscode/
