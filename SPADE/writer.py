@@ -34,8 +34,18 @@ class Writer():
         folderPath = f"{self.imagePath}/epoch{epoch}"
         os.makedirs(folderPath, exist_ok=True)
         fileName = f"{folderPath}/{str(idx).zfill(3)}.jpg"
-        image = transforms.ToPILImage()(imageTensor).convert('RGB')
+
+        imageNpy = imageTensor.numpy()
+        imageNpy = (np.transpose(imageNpy, (1, 2, 0))+1)/2.0*255.0
+        imageNpy = np.clip(imageNpy, 0, 255)
+        imageNpy = imageNpy.astype(np.uint8)
+
+        image = Image.fromarray(imageNpy)
+
+
+        # image = transforms.ToPILImage()(imageTensor).convert('RGB')
         image.save(fileName)
+
 
     def writeLoss(self, modelType, loss):
         if modelType == 'G':

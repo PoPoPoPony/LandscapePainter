@@ -5,53 +5,60 @@ from torchvision.transforms import InterpolationMode
 # from model.generator import Generator
 # from model.discriminator import Discriminator
 import os
+import torch
+
+
 
 # for original imag
 def getTransforms(mode):
     transformList = []
-
     newSize = (256, 256)
+
     if mode == 'img':
         transformList.append(transforms.Resize(newSize, interpolation=InterpolationMode.BICUBIC))
+        transformList.append(transforms.ToTensor())
+        transformList.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
     elif mode == 'anno':
         transformList.append(transforms.Resize(newSize, interpolation=InterpolationMode.NEAREST))
-        transformList.append(ToOneHot(151))
+        transformList.append(transforms.ToTensor())
 
-    transformList.append(transforms.ToTensor())
     return transforms.Compose(transformList)
 
 
-def convertAnnoTensor(annoTensor):
-    w = annoTensor.size(1)
-    h = annoTensor.size(2)
-    oneHotEncondingTensor = np.zeros((151, h, w), dtype=np.float32)
-
-    for i in range(h):
-        for j in range(w):
-            c = annoTensor[0, i, j]
-            oneHotEncondingTensor[c, i, j]=1
+def convertAnnoTensor(annoTensor, styleSize):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    annoTensor = annoTensor.long()
+    batchSize, _, h, w = annoTensor.size()
+    oneHotEncondingTensor = torch.FloatTensor(batchSize, styleSize, h, w).zero_().to(device)
+    oneHotEncondingTensor.scatter_(1, annoTensor, 1.0)
         
     return oneHotEncondingTensor
 
 
-class ToOneHot(object):
-    """ Convert the input PIL image to a one-hot torch tensor """
-    def __init__(self, n_classes=None):
-        self.n_classes = n_classes
 
-    def onehot_initialization(self, a):
-        if self.n_classes is None:
-            self.n_classes = len(np.unique(a))
-        out = np.zeros(a.shape + (self.n_classes, ), dtype=int)
-        out[self.__all_idx(a, axis=2)] = 1
-        return out
+def concatImageAnno(realImg, fakeImg, anno):
+    fakeConcat = torch.cat([anno, fakeImg], dim=1)
+    realConcat = torch.cat([anno, realImg], dim=1)
 
-    def __all_idx(self, idx, axis):
-        grid = np.ogrid[tuple(map(slice, idx.shape))]
-        grid.insert(axis, idx)
-        return tuple(grid)
+    fake_and_real = torch.cat([fakeConcat, realConcat], dim=0)
 
-    def __call__(self, img):
-        img = np.array(img)
-        one_hot = self.onehot_initialization(img)
-        return one_hot
+    return fake_and_real
+
+
+
+# results = 2*5*tensor
+# 2 = 2 scale discriminator
+# 5 = 5 tensor for each discriminator
+# tensor = 10*64*w*h
+# 10 due to concat fake and real 
+
+def devideFakeReal(results):
+    fake = []
+    real = []
+
+    for result in results:
+        fake.append([tensor[:tensor.size(0)//2] for tensor in result])
+        real.append([tensor[tensor.size(0)//2:] for tensor in result])
+
+    return fake, real
+    
