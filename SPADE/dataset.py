@@ -37,7 +37,7 @@ class ADE20KDS(Dataset):
         anno = self.annoPaths[idx]
         anno = Image.open(anno)
         annoTensor = self.annoTransform(anno)*255
-        annoTensor = annoTensor.type(torch.int64)
+
         # annoTensor = torch.squeeze(annoTensor, 0)
         # annoTensor = annoTensor.view(-1)
         # print(annoTensor.shape)
