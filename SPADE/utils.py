@@ -80,8 +80,15 @@ def RGBAnno2Mask(anno:Image, mappingDict:dict):
     G = seg[:,:,1]
     B = seg[:,:,2]
     ObjectClassMasks = (R/10).astype(np.int32)*256+(G.astype(np.int32))
-    # print(np.unique(ObjectClassMasks))
-    # func = np.vectorize(lambda x, *y:mappingDict[x])
-    # ObjectClassMasks = func(ObjectClassMasks)
+    uniqueClasses = np.unique(ObjectClassMasks)
 
-    return Image.fromarray(ObjectClassMasks)
+    maxIdx = max(mappingDict.values())
+    for c in uniqueClasses:
+        if c not in mappingDict:
+            maxIdx+=1
+            mappingDict[c] = maxIdx
+
+    func = np.vectorize(lambda x, *y:mappingDict[x])
+    ObjectClassMasks = func(ObjectClassMasks)
+
+    return Image.fromarray(ObjectClassMasks), mappingDict
