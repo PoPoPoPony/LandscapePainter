@@ -217,18 +217,34 @@ import pandas as pd
 # import pickle
 
 
-with open('ADE20K_2021_17_01/index_ade20k.pkl', 'rb') as f:
-    data = pickle.load(f)
+# with open('ADE20K_2021_17_01/index_ade20k.pkl', 'rb') as f:
+#     data = pickle.load(f)
 
-print(data.keys())
-print(data['filename']
-[0])
-print(data['folder'][0])
-print(len(data['objectnames']))
-
-
-
-# from dataset import ADE20KDS
+# print(data.keys())
+# print(data['filename']
+# [0])
+# print(data['folder'][0])
+# print(len(data['objectnames']))
 
 
-# a = ADE20KDS('ADE20K_2021_17_01')
+
+# img = Image.open(annoPath)
+# img2 = Image.open(f"ADE20K Outdoors/images/training/{annoPath.split('/')[-1][:-4]}.jpg")
+# c = transforms.ToTensor()
+# img2.save(f"{annoPath.split('/')[-1]}")
+# t = np.array(img)
+# print(t)
+
+# a = np.append(a, asarray(img))
+# a = np.unique(a)
+
+
+
+
+
+
+
+from dataset import ADE20KDS
+
+
+a = ADE20KDS('ADE20K_2021_17_01')
