@@ -21,6 +21,7 @@ class Writer():
 
     def writeCheckPt(self, epoch, model, modelType):
         epoch = str(epoch).zfill(3)
+        fileName=''
         if modelType == 'G':
             fileName = os.path.join(self.checkPtFilePathG, f"epoche{epoch}.pt") 
         elif modelType == 'D':
@@ -48,6 +49,7 @@ class Writer():
 
 
     def writeLoss(self, modelType, loss):
+        filePath=''
         if modelType == 'G':
             filePath = f"{self.lossPath}/Generator.npy"
         elif modelType == 'D':

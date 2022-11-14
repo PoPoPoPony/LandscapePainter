@@ -14,6 +14,9 @@ import glob
 from tqdm import tqdm
 from utils import convertAnnoTensor, concatImageAnno, devideFakeReal
 from matplotlib import pyplot as plt
+import os
+
+
 
 # def init_weights(m):
 #     if type(m) is nn.Linear:
@@ -47,13 +50,15 @@ if __name__ == '__main__':
     # S = MultiScaleDiscriminator(119).cuda()
     # summary(S, (122, 256, 256))
 
+    expName = "full_ADE20K"
+    os.makedirs(expName, exist_ok=True)
 
     ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
     trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    styleSize = len(ds.mappingDict)
+    styleSize = 3689
     G = Generator(styleSize).to(device)
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
@@ -67,8 +72,8 @@ if __name__ == '__main__':
     D_opt = Adam(D.parameters(), lr=lr_D, betas=(beta1, beta2))
 
     # load checkPoint files
-    G_pts = glob.glob("CheckPt/Generator/*.pt")
-    D_pts = glob.glob("CheckPt/Discriminator/*.pt")
+    G_pts = glob.glob(f"{expName}/CheckPt/Generator/*.pt")
+    D_pts = glob.glob(f"{expName}/CheckPt/Discriminator/*.pt")
 
     if len(G_pts)>0:
         # sort epoch by filename
@@ -99,7 +104,7 @@ if __name__ == '__main__':
     D_losses = []
     criterionGAN = GANLoss(fakeLabel=0.0, realLabel=1.0)
     criterionVGG = VGGLoss()
-    writer = Writer(rootPath='.')
+    writer = Writer(rootPath=f'{expName}')
 
     for epoch in range(start_ep, EPOCHES):
         print(f"Epoches : {epoch+1} / {EPOCHES}")
@@ -119,7 +124,6 @@ if __name__ == '__main__':
             # exit(0)
 
 
-            print(styleSize)
             anno = convertAnnoTensor(anno, styleSize)
 
             G_opt.zero_grad()

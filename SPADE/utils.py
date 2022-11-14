@@ -73,7 +73,7 @@ def devideFakeReal(results):
 
 
 
-def RGBAnno2Mask(anno:Image, mappingDict:dict):
+def RGBAnno2Mask(anno, mappingDict:dict):
     seg = np.array(anno)
     
     R = seg[:,:,0]
