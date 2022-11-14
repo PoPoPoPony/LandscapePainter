@@ -50,7 +50,7 @@ if __name__ == '__main__':
     # S = MultiScaleDiscriminator(119).cuda()
     # summary(S, (122, 256, 256))
 
-    expName = "full_ADE20K"
+    expName = "sub_ADE20K_1"
     os.makedirs(expName, exist_ok=True)
 
     ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    styleSize = 3689
+    styleSize = len(ds.mappingDict)
     G = Generator(styleSize).to(device)
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
