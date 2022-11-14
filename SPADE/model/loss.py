@@ -46,12 +46,12 @@ def getFeatureMathcingLoss(pred_fake, pred_real):
     criterion = torch.nn.L1Loss()
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     featureMatchingLoss = torch.FloatTensor(1).fill_(0).to(device)
-    ct=0
+
     for i in range(len(pred_fake)): # discriminator 數量
         for j in range(len(pred_fake[i])-1): # features 數量，最後一層輸出由GAN loss評估
             loss = criterion(pred_fake[i][j], pred_real[i][j].detach())  # pred fake應該也要 detach()?
             featureMatchingLoss+= loss*10/len(pred_fake) # 10/discriminator 是官方預設的 feature matching loss 的 lambda
-            ct+=1
+
 
     return featureMatchingLoss
 

@@ -48,12 +48,12 @@ if __name__ == '__main__':
     # summary(S, (122, 256, 256))
 
 
-    ds = ADE20KDS(dataPath="ADE20K Outdoors")
-    trainLoader = DataLoader(ds, batch_size=5, shuffle=False)
+    ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
+    trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    styleSize = 119
+    styleSize = len(ds.mappingDict)
     G = Generator(styleSize).to(device)
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
@@ -69,9 +69,6 @@ if __name__ == '__main__':
     # load checkPoint files
     G_pts = glob.glob("CheckPt/Generator/*.pt")
     D_pts = glob.glob("CheckPt/Discriminator/*.pt")
-
-    # G_pts = glob.glob("latest_net_G.pth")
-    # D_pts = glob.glob("latest_net_D.pth")
 
     if len(G_pts)>0:
         # sort epoch by filename
@@ -92,7 +89,6 @@ if __name__ == '__main__':
         D.load_state_dict(torch.load(D_pt))
 
         start_ep = int(G_pt.split('.')[-2][-3:])
-
     else:
         start_ep = 0
 
@@ -123,7 +119,7 @@ if __name__ == '__main__':
             # exit(0)
 
 
-
+            print(styleSize)
             anno = convertAnnoTensor(anno, styleSize)
 
             G_opt.zero_grad()
