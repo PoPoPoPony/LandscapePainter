@@ -48,18 +48,18 @@ if __name__ == '__main__':
     # summary(S, (122, 256, 256))
 
 
-    ds = ADE20KDS(dataPath="ADE20K Outdoors")
+    ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
     trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    styleSize = 119
+    styleSize = 3689
     G = Generator(styleSize).to(device)
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
     D.apply(init_weights)
-    lr_G = 0.0001
-    lr_D = 0.0004
+    lr_G = 0.0002
+    lr_D = 0.0002
     beta1 = 0
     beta2 = 0.999
 
@@ -69,9 +69,6 @@ if __name__ == '__main__':
     # load checkPoint files
     G_pts = glob.glob("CheckPt/Generator/*.pt")
     D_pts = glob.glob("CheckPt/Discriminator/*.pt")
-
-    # G_pts = glob.glob("latest_net_G.pth")
-    # D_pts = glob.glob("latest_net_D.pth")
 
     if len(G_pts)>0:
         # sort epoch by filename
@@ -91,8 +88,7 @@ if __name__ == '__main__':
         D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
-        # start_ep = int(G_pt.split('.')[-2][-3:])
-        start_ep=0
+        start_ep = int(G_pt.split('.')[-2][-3:])
     else:
         start_ep = 0
 
@@ -104,7 +100,6 @@ if __name__ == '__main__':
     criterionGAN = GANLoss(fakeLabel=0.0, realLabel=1.0)
     criterionVGG = VGGLoss()
     writer = Writer(rootPath='.')
-    imgList = []
 
     for epoch in range(start_ep, EPOCHES):
         print(f"Epoches : {epoch+1} / {EPOCHES}")
@@ -124,13 +119,7 @@ if __name__ == '__main__':
             # exit(0)
 
 
-
             anno = convertAnnoTensor(anno, styleSize)
-
-            # for demo
-            if i < 5:
-                with torch.no_grad():
-                    imgList.append(anno.detach())
 
             G_opt.zero_grad()
             # sample latentVector from N(0, 1)
@@ -184,10 +173,9 @@ if __name__ == '__main__':
                 with torch.no_grad():
                     writer.writeLoss("G", loss_G_sum.item())
                     writer.writeLoss("D", loss_D_sum.item())
-                    for i in range(len(imgList[-5:])):
-                        # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
-                        fakeImg = G(imgList[i]).detach().to('cpu')
-                        writer.writeResult(epoch, fakeImg, i)
+                    # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
+                    fakeImg = G(anno).detach().to('cpu')
+                    writer.writeResult(epoch, fakeImg, i)
 
 
         writer.writeCheckPt(epoch, G, "G")

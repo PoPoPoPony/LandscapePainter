@@ -7,44 +7,108 @@ import pandas as pd
 from utils import getTransforms
 import torch
 import numpy as np
+import pickle
+from utils import RGBAnno2Mask
 
 
 class ADE20KDS(Dataset):
     def __init__(self, dataPath) -> None:
-        self.imgPaths = glob.glob(f"{dataPath}/images/*/*.jpg")
-        self.annoPaths = glob.glob(f"{dataPath}/annotations2/*.png")
-        df = pd.read_csv(f"{dataPath}/objectInfo119.csv", encoding="UTF-8")
-        idxs = df['Idx'].to_list()
-        names = []
-        for name in df['Name'].to_list():
-            if ';' in name:
-                names.append(name.split(";")[0])
-            else:
-                names.append(name)
-        self.mappingClass = dict(zip(idxs, names))
+        self.mappingDict = self.__getMappingDict(dataPath)
+        self.imgAnnoPairs = self.__getImgAnnoPair(dataPath)
+
+        # df = pd.read_csv(f"{dataPath}/objectInfo119.csv", encoding="UTF-8")
+        # idxs = df['Idx'].to_list()
+        # names = []
+        # for name in df['Name'].to_list():
+        #     if ';' in name:
+        #         names.append(name.split(";")[0])
+        #     else:
+        #         names.append(name)
+        # self.mappingClass = dict(zip(idxs, names))
         self.imgTransform = getTransforms(mode='img')
         self.annoTransform = getTransforms(mode='anno')
-        print(self.mappingClass)
+        # print(self.mappingClass)
 
     def __len__(self):
-        return len(self.imgPaths)
+        return len(self.imgAnnoPairs)
 
     def __getitem__(self, idx):
-        img = self.imgPaths[idx]
+        img = self.imgAnnoPairs[idx][0]
         img = Image.open(img)
         img = img.convert('RGB') # by NVLab
         imgTensor = self.imgTransform(img)
 
         # print image which is not RGB
-        if imgTensor.shape[0] != 3:
-            print(self.imgPaths[idx])
+        # if imgTensor.shape[0] != 3:
+        #     print(self.imgPaths[idx])
 
-        anno = self.annoPaths[idx]
+        anno = self.imgAnnoPairs[idx][1]
         anno = Image.open(anno)
+        # print(np.array(anno).shape)
+        anno = RGBAnno2Mask(anno, self.mappingDict)
 
-        annoTensor = self.annoTransform(anno)*255.0
-        if annoTensor.shape[0] != 1:
-            print(self.imgPaths[idx])
+        # 不知道為啥convert完之後不會到0~1之間= =
+        annoTensor = self.annoTransform(anno)
+
+
+        # print(annoTensor)
+
+        # exit(0)
+
+
+        # if annoTensor.shape[0] != 1:
+        #     print(self.imgPaths[idx])
 
 
         return imgTensor, annoTensor
+
+
+    def __getMappingDict(self, dataPath):
+        if len(glob.glob("mappingfiles/Name2Idx.csv")) == 0:
+            # 若mapping.csv 不存在則從ADE20K中的object.txt中建立mapping.csv
+            os.makedirs("mappingfiles", exist_ok=True)
+            with open(f"{dataPath}/objects.txt",encoding="ISO-8859-1") as f:
+                data = f.readlines()
+
+            data = data[1:] # 去除column name
+            store = []
+            
+            for i in range(len(data)):
+                log = data[i].split("\t")
+                label = log[0]
+                if ',' in label:
+                    label = label.split(",")[0]
+                originalIdx = log[1]
+                newIdx = i+1
+
+                store.append([label, originalIdx, newIdx])
+
+            store.insert(0 , ["unknown", 0, 0]) # ADE20K中0為unknown
+
+            df = pd.DataFrame(store)
+            df.columns = ['Label', 'OriginalIdx', 'NewIdx']
+            df.to_csv('mappingfiles/Name2Idx.csv', encoding="UTF-8", index=False)
+
+        df = pd.read_csv('mappingfiles/Name2Idx.csv', encoding="UTF-8")
+        mappingDict = dict(df.loc[:, 'OriginalIdx':'NewIdx'].to_dict('split')['data'])
+
+        return mappingDict
+
+
+    def __getImgAnnoPair(self, dataPath):
+        pklPath = f"{dataPath}/index_ade20k.pkl"
+        with open(pklPath, 'rb') as f:
+            data = pickle.load(f)
+
+        folders = data['folder']
+        imgfilenames = data['filename']
+        annofilenames = [x.replace(".jpg", "_seg.png") for x in data['filename']]
+
+        imgAnnoPairs = []
+        for i in range(len(folders)):
+            imgAnnoPairs.append([
+                os.path.join(folders[i], imgfilenames[i]),
+                os.path.join(folders[i], annofilenames[i])
+            ])
+
+        return imgAnnoPairs

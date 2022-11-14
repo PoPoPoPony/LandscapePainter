@@ -7,7 +7,7 @@ class Generator(nn.Module):
     def __init__(self, styleSize) -> None:
         super(Generator, self).__init__()
 
-        self.conv1 = nn.Conv2d(119, 1024, 3, padding=1)
+        self.conv1 = nn.Conv2d(styleSize, 1024, 3, padding=1)
 
         outputSizes = [
             1024,

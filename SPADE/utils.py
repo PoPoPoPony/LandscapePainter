@@ -9,7 +9,6 @@ import torch
 
 
 
-# for original imag
 def getTransforms(mode):
     transformList = []
     newSize = (256, 256)
@@ -25,7 +24,17 @@ def getTransforms(mode):
     return transforms.Compose(transformList)
 
 
-def convertAnnoTensor(annoTensor, styleSize):
+def convertAnnoTensor(annoTensor:torch.Tensor, styleSize:int) -> torch.Tensor:
+    """
+    convert annoTensor from label encoding to one-hot encoding
+
+    Args:
+        annoTensor: segmentation map
+        styleSize: number of classes
+    
+    Returns:
+        oneHotEncondingTensor
+    """
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     annoTensor = annoTensor.long()
     batchSize, _, h, w = annoTensor.size()
@@ -61,4 +70,18 @@ def devideFakeReal(results):
         real.append([tensor[tensor.size(0)//2:] for tensor in result])
 
     return fake, real
+
+
+
+def RGBAnno2Mask(anno:Image, mappingDict:dict):
+    seg = np.array(anno)
     
+    R = seg[:,:,0]
+    G = seg[:,:,1]
+    B = seg[:,:,2]
+    ObjectClassMasks = (R/10).astype(np.int32)*256+(G.astype(np.int32))
+    # print(np.unique(ObjectClassMasks))
+    # func = np.vectorize(lambda x, *y:mappingDict[x])
+    # ObjectClassMasks = func(ObjectClassMasks)
+
+    return Image.fromarray(ObjectClassMasks)
