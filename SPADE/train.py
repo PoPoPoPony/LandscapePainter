@@ -49,7 +49,7 @@ if __name__ == '__main__':
 
 
     ds = ADE20KDS(dataPath="ADE20K Outdoors")
-    trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
+    trainLoader = DataLoader(ds, batch_size=5, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -91,13 +91,13 @@ if __name__ == '__main__':
         D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
-        # start_ep = int(G_pt.split('.')[-2][-3:])
-        start_ep=0
+        start_ep = int(G_pt.split('.')[-2][-3:])
+
     else:
         start_ep = 0
 
 
-    EPOCHES = 50
+    EPOCHES = 100
     imgs = []
     G_losses = []
     D_losses = []
@@ -170,7 +170,7 @@ if __name__ == '__main__':
             })
 
 
-            if i%10==0 and i>5:
+            if i%100==0 and i>5:
                 print()
                 print(G_losses[-1])
                 print(D_losses[-1])
