@@ -53,7 +53,7 @@ if __name__ == '__main__':
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    styleSize = 3689
+    styleSize = len(ds.mappingDict)
     G = Generator(styleSize).to(device)
     G.apply(init_weights)
     D = MultiScaleDiscriminator(styleSize).to(device)
@@ -119,6 +119,7 @@ if __name__ == '__main__':
             # exit(0)
 
 
+            print(styleSize)
             anno = convertAnnoTensor(anno, styleSize)
 
             G_opt.zero_grad()
