@@ -63,3 +63,7 @@ class ADE20KDS(Dataset):
         # annoTensor = convertAnnoTensor(annoTensor)
 
         return imgTensor, annoTensor
+
+    
+    def mappingNewAnno():
+        pass
