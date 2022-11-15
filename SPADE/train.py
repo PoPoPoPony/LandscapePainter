@@ -1,6 +1,6 @@
 from torchsummary import summary
 from model.generator import Generator
-from model.discriminator import Discriminator
+from model.discriminator import MultiScaleDiscriminator
 from dataset import ADE20KDS
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
@@ -8,10 +8,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.optim import Adam
-from model.loss import GANloss, GANLoss2
+from model.loss import GANLoss, getFeatureMathcingLoss, VGGLoss
 from writer import Writer
 import glob
 from tqdm import tqdm
+from utils import convertAnnoTensor, concatImageAnno, devideFakeReal
+from matplotlib import pyplot as plt
+import os
+
 
 
 # def init_weights(m):
@@ -36,22 +40,31 @@ if __name__ == '__main__':
     # summary(S, [(1024, 4, 4), (1, 512, 512)])
     # S = SPADEResBlk(1024, 1024).cuda()
     # summary(S, [(1024, 4, 4), (1, 512, 512)])
-    # S = Generator(151).cuda()
-    # summary(S, [(1, 256), (151, 512, 512)])
-    # S = Discriminator().cuda()
-    # summary(S, [(3, 512, 512), (1, 512, 512)])
 
-    ds = ADE20KDS(dataPath="ADE20K Outdoors")
-    trainLoader = DataLoader(ds, batch_size=10, shuffle=False)
+
+    # S = Generator(119).cuda()
+    # summary(S, (119, 256, 256))
+    # exit(0)
+
+
+    # S = MultiScaleDiscriminator(119).cuda()
+    # summary(S, (122, 256, 256))
+
+    expName = "sub_ADE20K_1"
+    os.makedirs(expName, exist_ok=True)
+
+    ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
+    trainLoader = DataLoader(ds, batch_size=3, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    G = Generator(151).to(device)
+    styleSize = len(ds.mappingDict)
+    G = Generator(styleSize).to(device)
     G.apply(init_weights)
-    D = Discriminator(151).to(device)
+    D = MultiScaleDiscriminator(styleSize).to(device)
     D.apply(init_weights)
-    lr_G = 0.0001
-    lr_D = 0.0004
+    lr_G = 0.0002
+    lr_D = 0.0002
     beta1 = 0
     beta2 = 0.999
 
@@ -59,28 +72,39 @@ if __name__ == '__main__':
     D_opt = Adam(D.parameters(), lr=lr_D, betas=(beta1, beta2))
 
     # load checkPoint files
-    G_pts = glob.glob("CheckPt/Generator/*.pt")
-    D_pts = glob.glob("CheckPt/Discriminator/*.pt")
+    G_pts = glob.glob(f"{expName}/CheckPt/Generator/*.pt")
+    D_pts = glob.glob(f"{expName}/CheckPt/Discriminator/*.pt")
 
     if len(G_pts)>0:
+        # sort epoch by filename
+        G_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
+        
         G_pt = G_pts[-1]
+
+        # d = torch.load(G_pt)
+        # for i in d:
+        #     print(i)
+        # exit()
+
+
         G.load_state_dict(torch.load(G_pt))
 
         D_pt = D_pts[-1]
+        D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
-        start_ep = int(G_pt.split('.')[-2][-3:])
+        start_ep = int(G_pt.split('.')[-2][-3:])+1
     else:
         start_ep = 0
 
-    EPOCHES = 50
+
+    EPOCHES = 100
     imgs = []
     G_losses = []
     D_losses = []
-    criterion = GANloss(fakeLabel=0.0, realLabel=1.0)
-    criterion2 = GANLoss2()
-    writer = Writer(rootPath='.')
-    imgList = []
+    criterionGAN = GANLoss(fakeLabel=0.0, realLabel=1.0)
+    criterionVGG = VGGLoss()
+    writer = Writer(rootPath=f'{expName}')
 
     for epoch in range(start_ep, EPOCHES):
         print(f"Epoches : {epoch+1} / {EPOCHES}")
@@ -90,46 +114,73 @@ if __name__ == '__main__':
             img = data[0].to(device)
             anno = data[1].to(device)
 
-            # for demo
-            if i < 5:
-                imgList.append(anno)
+            # a = anno[0].cpu().detach().numpy()
+            # plt.imshow(a[0])
+            # plt.show()
+
+            # b = img[0].cpu().detach().numpy()
+            # plt.imshow(b[0])
+            # plt.show()
+            # exit(0)
+
+
+            anno = convertAnnoTensor(anno, styleSize)
 
             G_opt.zero_grad()
             # sample latentVector from N(0, 1)
-            latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
-            fakeImg = G(latentVector, anno)
-            pred_real, pred_fake = D(img, fakeImg, anno)
-            pred_real2 = pred_real.clone().detach().requires_grad_(True)
-            pred_fake2 = pred_fake.clone().detach().requires_grad_(True)
+            # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
+            fakeImg = G(anno)
+            fake_and_real = concatImageAnno(img, fakeImg, anno)
+            pred_fake, pred_real = devideFakeReal(D(fake_and_real))
 
-            # loss_G = criterion(pred_fake, True, lossMode='ad')
-            loss_G = criterion2(pred_fake, True,)
-            loss_G.backward(retain_graph=True)
+            loss_G = {}
+            loss_G['GAN'] = criterionGAN(pred_fake, True)
+            loss_G['Feature'] = getFeatureMathcingLoss(pred_fake, pred_real)
+            loss_G['VGG'] = criterionVGG(fakeImg, img)
+
+            loss_G_sum = sum(loss_G.values()).mean()
+            loss_G_sum.backward()
             G_opt.step()
-
+            
             D_opt.zero_grad()
-            # loss_D_fake = criterion(pred_fake.detach(), False, lossMode='ad')
-            loss_D_fake = criterion2(pred_fake2, False)
+            with torch.no_grad():
+                fakeImg = G(anno).detach()
+                fakeImg.requires_grad_()
 
-            # loss_D_true = criterion(pred_real, True, lossMode='ad')
-            loss_D_true = criterion2(pred_real2, True)
-            loss_D = loss_D_fake + loss_D_true
+            fake_and_real = concatImageAnno(img, fakeImg, anno)
+            pred_fake, pred_real = devideFakeReal(D(fake_and_real))
 
-            loss_D.backward()
+            loss_D = {}
+            loss_D['fake'] = criterionGAN(pred_fake, False)
+            loss_D['real'] = criterionGAN(pred_real, True)
+            loss_D_sum = sum(loss_D.values()).mean()
+
+            loss_D_sum.backward()
             D_opt.step()
 
-            G_losses.append(loss_G.detach().to('cpu'))
-            D_losses.append(loss_D.detach().to('cpu'))
+            G_losses.append({
+                'GAN': loss_G['GAN'].item(),
+                'Feature': loss_G['Feature'].item(),
+                'VGG': loss_G['VGG'].item(),
 
-            if i%10==0 and i>5:
-                writer.writeLoss("G", loss_G.detach().to('cpu').item())
-                writer.writeLoss("D", loss_D.detach().to('cpu').item())
-                G.eval()
+            })
+            D_losses.append({
+                'fake': loss_D['fake'].item(),
+                'real': loss_D['real'].item(),
+            })
+
+
+            if i%100==0 and i>5:
+                print()
+                print(G_losses[-1])
+                print(D_losses[-1])
+
                 with torch.no_grad():
-                    for i in range(len(imgList[-5:])):
-                        latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
-                        fakeImg = G(latentVector, imgList[i]).detach().to('cpu')
-                        writer.writeResult(epoch, fakeImg, i)
+                    writer.writeLoss("G", loss_G_sum.item())
+                    writer.writeLoss("D", loss_D_sum.item())
+                    # latentVector = torch.empty(256).normal_(0.0, 1.0).to(device) # initial by other method
+                    fakeImg = G(anno).detach().to('cpu')
+                    writer.writeResult(epoch, fakeImg, i)
 
 
         writer.writeCheckPt(epoch, G, "G")
