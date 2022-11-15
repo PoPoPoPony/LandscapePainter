@@ -75,7 +75,7 @@ def devideFakeReal(results):
 
 def RGBAnno2Mask(anno, mappingDict:dict):
     seg = np.array(anno)
-    
+
     R = seg[:,:,0]
     G = seg[:,:,1]
     B = seg[:,:,2]
@@ -91,4 +91,4 @@ def RGBAnno2Mask(anno, mappingDict:dict):
     func = np.vectorize(lambda x, *y:mappingDict[x])
     ObjectClassMasks = func(ObjectClassMasks)
 
-    return Image.fromarray(ObjectClassMasks), mappingDict
+    return Image.fromarray(np.uint8(ObjectClassMasks)), mappingDict

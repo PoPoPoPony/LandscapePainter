@@ -54,7 +54,7 @@ if __name__ == '__main__':
     os.makedirs(expName, exist_ok=True)
 
     ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
-    trainLoader = DataLoader(ds, batch_size=1, shuffle=False)
+    trainLoader = DataLoader(ds, batch_size=3, shuffle=False)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -93,7 +93,7 @@ if __name__ == '__main__':
         D_pts.sort(key=lambda x:int(x.split('.')[-2][-3:]))
         D.load_state_dict(torch.load(D_pt))
 
-        start_ep = int(G_pt.split('.')[-2][-3:])
+        start_ep = int(G_pt.split('.')[-2][-3:])+1
     else:
         start_ep = 0
 

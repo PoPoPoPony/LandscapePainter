@@ -10,7 +10,7 @@ import numpy as np
 import pickle
 from utils import RGBAnno2Mask
 from tqdm import tqdm
-
+from torchvision import transforms
 
 class ADE20KDS(Dataset):
     def __init__(self, dataPath) -> None:
@@ -48,16 +48,8 @@ class ADE20KDS(Dataset):
 
         anno = self.imgAnnoPairs[idx][1]
         anno = Image.open(anno)
-        # print(np.array(anno).shape)
-        anno = RGBAnno2Mask(anno, self.mappingDict)
-
-        # 不知道為啥convert完之後不會到0~1之間= =
-        annoTensor = self.annoTransform(anno)
-
-
-        # print(annoTensor)
-
-        # exit(0)
+        anno, _ = RGBAnno2Mask(anno, self.mappingDict)
+        annoTensor = self.annoTransform(anno)*255
 
 
         # if annoTensor.shape[0] != 1:
