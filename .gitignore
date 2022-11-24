@@ -1,13 +1,12 @@
 
 ADE20K Outdoors/
+CheckPt/
+images/
+loss/
 
 
-
-
-
-
-
-
+SPADE/ADE20K_2021_17_01/
+SPADE/pony8674312_1f39912f.zip
 
 
 # Byte-compiled / optimized / DLL files
