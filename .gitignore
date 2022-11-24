@@ -7,6 +7,15 @@ loss/
 
 SPADE/ADE20K_2021_17_01/
 SPADE/pony8674312_1f39912f.zip
+ADE20K_2021_17_01/
+full_ADE20K/
+sub_ADE20K_1/
+OST300/
+lhq_1024_jpg
+landscape
+stylegan2-pytorch/
+
+
 
 
 # Byte-compiled / optimized / DLL files
@@ -138,3 +147,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/SPADE/ADE20K_2021_17_01
+.vscode/
