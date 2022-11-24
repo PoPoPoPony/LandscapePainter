@@ -54,7 +54,7 @@ if __name__ == '__main__':
     os.makedirs(expName, exist_ok=True)
 
     ds = ADE20KDS(dataPath="ADE20K_2021_17_01")
-    trainLoader = DataLoader(ds, batch_size=3, shuffle=False)
+    trainLoader = DataLoader(ds, batch_size=4, shuffle=True)
 
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -95,7 +95,7 @@ if __name__ == '__main__':
 
         start_ep = int(G_pt.split('.')[-2][-3:])+1
     else:
-        start_ep = 0
+        start_ep = 1
 
 
     EPOCHES = 100
@@ -106,8 +106,8 @@ if __name__ == '__main__':
     criterionVGG = VGGLoss()
     writer = Writer(rootPath=f'{expName}')
 
-    for epoch in range(start_ep, EPOCHES):
-        print(f"Epoches : {epoch+1} / {EPOCHES}")
+    for epoch in range(start_ep, EPOCHES+1):
+        print(f"Epoches : {epoch} / {EPOCHES}")
         G.train()
         D.train()
         for i, data in tqdm(enumerate(trainLoader)):
@@ -147,7 +147,7 @@ if __name__ == '__main__':
                 fakeImg = G(anno).detach()
                 fakeImg.requires_grad_()
 
-            fake_and_real = concatImageAnno(img, fakeImg, anno)
+            fake_and_real = concatImageAnno(img, fakeImg, anno) 
             pred_fake, pred_real = devideFakeReal(D(fake_and_real))
 
             loss_D = {}
