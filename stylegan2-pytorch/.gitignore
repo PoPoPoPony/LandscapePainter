@@ -1,24 +1,9 @@
 
-SPADE/ADE20K Outdoors/
-SPADE/CheckPt/
-SPADE/images/
-SPADE/loss/
 
-
-SPADE/ADE20K_2021_17_01/
-SPADE/full_ADE20K/
-SPADE/sub_ADE20K_1/
-
-OST300/
-lhq_1024_jpg/
-landscape/
-
-
-stylegan2-pytorch/data/landscapedata/*
-stylegan2-pytorch/checkpoint/*
-stylegan2-pytorch/sample/*
-stylegan2-pytorch/prepared_data/*
-
+data/landscapedata/*
+checkpoint/*
+sample/*
+prepared_data/*
 
 
 # Byte-compiled / optimized / DLL files
@@ -151,5 +136,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-/SPADE/ADE20K_2021_17_01
-.vscode/
+wandb/
+*.lmdb/
+*.pkl
