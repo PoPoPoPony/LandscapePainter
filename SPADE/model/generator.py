@@ -38,7 +38,7 @@ class Generator(nn.Module):
         x = self.conv1(x)
 
         
- 
+
         for module in self.models:
             if type(module) == SPADEResBlk:
                 x = module(x, s)
