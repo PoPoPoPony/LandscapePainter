@@ -1,6 +1,6 @@
 
 
-data/landscapedata/*
+data/*
 checkpoint/*
 sample/*
 prepared_data/*
@@ -139,3 +139,4 @@ dmypy.json
 wandb/
 *.lmdb/
 *.pkl
+data/landscapedata/00000000_(2).jpg

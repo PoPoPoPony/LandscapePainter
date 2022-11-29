@@ -14,10 +14,6 @@ lhq_1024_jpg/
 landscape/
 
 
-stylegan2-pytorch/data/landscapedata/*
-stylegan2-pytorch/checkpoint/*
-stylegan2-pytorch/sample/*
-stylegan2-pytorch/prepared_data/*
 
 
 
