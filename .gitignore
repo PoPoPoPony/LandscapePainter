@@ -1,19 +1,19 @@
 
-ADE20K Outdoors/
-CheckPt/
-images/
-loss/
+SPADE/ADE20K Outdoors/
+SPADE/CheckPt/
+SPADE/images/
+SPADE/loss/
 
 
 SPADE/ADE20K_2021_17_01/
 SPADE/pony8674312_1f39912f.zip
-ADE20K_2021_17_01/
-full_ADE20K/
-sub_ADE20K_1/
+SPADE/full_ADE20K/
+SPADE/sub_ADE20K_1/
+
 OST300/
-lhq_1024_jpg
-landscape
-stylegan2-pytorch/
+lhq_1024_jpg/
+landscape/
+
 
 PsP/
 PsP2/
