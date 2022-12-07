@@ -7,8 +7,8 @@
             <Painter/>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" style="top: 40vh; position: relative">Generate!</el-button>
-            <el-select v-model="generatorModel" placeholder="Select" size="large" style="margin-top: 10px; top: 40vh; position: relativ">
+            <el-button type="primary" style="top: 40vh; position: relative" :disabled="useModel==null" @click="onGenerateClick">Generate!</el-button>
+            <el-select v-model="useModel" placeholder="Select" size="large" style="margin-top: 20px; top: 40vh; position: relativ" @change="onChangeModel">
               <el-option
                 v-for="item in options"
                 :key="item.value"
@@ -17,8 +17,8 @@
               />
             </el-select>
           </el-col>
-          <el-col :span="8" :offset="2">
-
+          <el-col :span="8">
+            <el-image :style="imageViewerStyle" :src="generatedImg" fit="fill" :key="imageKey"/>
           </el-col>
         </el-row>
       </el-col>
@@ -45,11 +45,34 @@ export default {
       }, {
         value: 1,
         label: "PsP encoder + StyleGANv2",
-      }]
+      }],
+      useModel: null,
+      generatedImg: null,
+      m1Shape: 256, // m1 : SPADE original shape
+      m2Shape: 512, // m2 : PsP encoder + StyleGANv2 original shape
+      imageKey: 0, // image viewer key
+      imageViewerShape: null, // real shape of image viewer
+      imageViewerStyle: "width: 100px; height: 100px", // default image viewer style statement
     }
   },
   computed() {
 
+  },
+  methods: {
+    onChangeModel(val) {
+      let originalShape=0
+      if(val==0) {
+        originalShape = this.m1Shape
+      } else {
+        originalShape = this.m2Shape
+      }
+      this.imageViewerShape = Math.min(originalShape, window.innerWidth-50)
+      this.imageViewerStyle = "width: " + String(this.imageViewerShape) + "px; height: " + String(this.imageViewerShape) + "px"
+      this.imageKey+=1
+    },
+    onGenerateClick() {
+      
+    }
   }
 }
 
