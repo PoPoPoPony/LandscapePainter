@@ -17,10 +17,12 @@ landscape/
 DeepLabV3/
 
 
-
-PsP/
-PsP2/
-
+PsP/exp*
+PsP/ADE20K_2021_17_01
+PsP/ade20koutdoor
+PsP/styleGAN_ckpt
+PsP/pretrained_psp
+PsP/pretrained_models
 
 
 
