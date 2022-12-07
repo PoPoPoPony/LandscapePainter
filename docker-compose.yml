@@ -1,0 +1,42 @@
+version: '3.7'
+
+networks:
+  ccClub2022fall:
+
+services:
+  frontend:
+    build:
+      context: .
+
+    # image: popopopony/ccclub2022fall_frontend:v1
+    image: docker_vue_nginx
+
+    container_name: frontend
+
+    ports: 
+    - "0.0.0.0:8083:80"
+
+    networks:
+    - ccClub2022fall
+
+    # volumes:
+    # - ./:/code
+
+  backend:
+    build:
+      context: .
+
+    # image: popopopony/ccclub2022fall_backend:v1
+    image: docker_fastapi
+
+    container_name: backend
+
+    ports: 
+    - "0.0.0.0:8084:8084"
+
+    networks:
+    - ccClub2022fall
+
+
+    # volumes:
+    # - ./:/code
