@@ -21,7 +21,7 @@
           <el-radio-group v-model="penColor" :fill="penColor">
             <el-radio-button label="red" border>Tree</el-radio-button>
             <el-radio-button label="green" border>gress</el-radio-button>
-            <el-radio-button label="blue" border>sea</el-radio-button>
+            <el-radio-button label="blue" border>river</el-radio-button>
             <el-radio-button label="brown" border>mountain</el-radio-button>
             <el-radio-button label="yellow" border>sky</el-radio-button>
             <el-radio-button label="#D0D0D0" border>
