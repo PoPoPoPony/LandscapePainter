@@ -4,10 +4,10 @@
       <el-col :span="22">
         <el-row>
           <el-col :span="13">
-            <Painter/>
+            <Painter ref='painter'/>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" style="top: 40vh; position: relative" :disabled="useModel==null" @click="onGenerateClick">Generate!</el-button>
+            <el-button type="primary" style="top: 40vh; position: relative" :disabled="useModel==null" @click="this.onGenerateClick">Generate!</el-button>
             <el-select v-model="useModel" placeholder="Select" size="large" style="margin-top: 20px; top: 40vh; position: relativ" @change="onChangeModel">
               <el-option
                 v-for="item in options"
@@ -71,7 +71,9 @@ export default {
       this.imageKey+=1
     },
     onGenerateClick() {
-      
+      let a = this.$refs.painter.returnCtx()
+      let w = Math.min(512, window.innerWidth-50)
+      console.log(a.getImageData(0, 0, w, w))
     }
   }
 }

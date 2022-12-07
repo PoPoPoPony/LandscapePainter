@@ -20,6 +20,11 @@ PsP/pretrained_models
 PsP/notebooks
 
 
+
+testfolder/
+
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

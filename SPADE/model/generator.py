@@ -1,6 +1,6 @@
 import torch.nn as nn
-from model.architecture import SPADEResBlk
-from torch.nn.utils import spectral_norm
+from SPADE.model.architecture import SPADEResBlk
+# from torch.nn.utils import spectral_norm
 import torch.nn.functional as F
 
 class Generator(nn.Module):

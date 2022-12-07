@@ -121,6 +121,10 @@ export default {
       console.log("c")
       this.ctx.fillStyle = "#D0D0D0"
       this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasWidth)
+    },
+
+    returnCtx() {
+      return this.ctx
     }
 
   },
