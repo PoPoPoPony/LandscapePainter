@@ -103,7 +103,7 @@ from tqdm import tqdm
 
 a = []
 
-for _ in range(119):
+for _ in range(1399):
     temp = np.random.choice(range(256), replace=True, size=3)
     temp = temp.tolist()
     temp = [int(x) for x in temp]
