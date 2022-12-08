@@ -19,11 +19,11 @@
         </el-col>
         <el-col :span="12">
           <el-radio-group v-model="penColor" :fill="penColor">
-            <el-radio-button label="red" border>Tree</el-radio-button>
-            <el-radio-button label="green" border>gress</el-radio-button>
-            <el-radio-button label="blue" border>river</el-radio-button>
-            <el-radio-button label="brown" border>mountain</el-radio-button>
-            <el-radio-button label="yellow" border>sky</el-radio-button>
+            <el-radio-button label="rgb(110,39,204)" border>Tree</el-radio-button>
+            <el-radio-button label="rgb(30,145,153)" border>snow</el-radio-button>
+            <el-radio-button label="rgb(80,80,182)" border>river</el-radio-button>
+            <el-radio-button label="rgb(60,74,51)" border>mountain</el-radio-button>
+            <el-radio-button label="rgb(90,116,85)" border>sky</el-radio-button>
             <el-radio-button label="#D0D0D0" border>
               <el-icon size='12'><CloseBold /></el-icon>
             </el-radio-button>
@@ -59,7 +59,7 @@ export default {
     return {
       ctx: null,
       isDrawing: false,
-      penColor: "red",
+      penColor: "rgb(110,39,204)",
       penWidth: "10",
       startPosX: null,
       startPosY: null,
@@ -118,7 +118,6 @@ export default {
     },
 
     onClearClick() {
-      console.log("c")
       this.ctx.fillStyle = "#D0D0D0"
       this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasWidth)
     },

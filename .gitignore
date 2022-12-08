@@ -19,6 +19,8 @@ PsP/pretrained_psp
 PsP/pretrained_models
 PsP/notebooks
 
+SPADE_ckpt/*.pt
+PsP_ckpt/*.pt
 
 
 testfolder/

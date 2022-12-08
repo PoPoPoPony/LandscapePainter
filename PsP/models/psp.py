@@ -7,9 +7,9 @@ import math
 
 import torch
 from torch import nn
-from models.encoders import psp_encoders
-from models.stylegan2.model import Generator
-from configs.paths_config import model_paths
+from PsP.models.encoders import psp_encoders
+from PsP.models.stylegan2.model import Generator
+from PsP.configs.paths_config import model_paths
 from torchsummary import summary
 
 def get_keys(d, name):

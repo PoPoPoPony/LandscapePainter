@@ -2,8 +2,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
-from models.encoders.helpers import get_blocks
-from models.stylegan2.model import EqualLinear
+from PsP.models.encoders.helpers import get_blocks
+from PsP.models.stylegan2.model import EqualLinear
 
 class GradualStyleBlock(nn.Module):
     def __init__(self, in_channel, out_channel, spatial) -> None:

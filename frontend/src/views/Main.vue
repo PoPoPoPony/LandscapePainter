@@ -18,18 +18,20 @@
             </el-select>
           </el-col>
           <el-col :span="8">
-            <el-image :style="imageViewerStyle" :src="generatedImg" fit="fill" :key="imageKey"/>
+            <el-image :style="imageViewerStyle" :src="this.generatedImg" fit="fill" :key="this.imageKey"/>
           </el-col>
         </el-row>
       </el-col>
     </el-row>
-    <!-- <Painter msg="Welcome to Your Vue.js App"/> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
 import Painter from '@/components/Painter.vue'
+import {GenerateSPADE} from '@/apis/GenerateSPADE'
+import {GeneratePsP} from '@/apis/GeneratePsP'
+
 
 export default {
   name: 'Main',
@@ -60,6 +62,8 @@ export default {
   },
   methods: {
     onChangeModel(val) {
+      this.useModel = val
+      console.log(this.useModel)
       let originalShape=0
       if(val==0) {
         originalShape = this.m1Shape
@@ -71,10 +75,46 @@ export default {
       this.imageKey+=1
     },
     onGenerateClick() {
-      let a = this.$refs.painter.returnCtx()
+      let ctx = this.$refs.painter.returnCtx()
       let w = Math.min(512, window.innerWidth-50)
-      console.log(a.getImageData(0, 0, w, w))
-    }
+      let ctxArray = ctx.getImageData(0, 0, w, w)['data']
+      let anno = this.canvasData2Anno(ctxArray, w)
+      if(this.useModel == 0) {
+        GenerateSPADE(anno).then((res)=>{
+            let retv = res.data
+            this.generatedImg = "data:image/jpeg;base64," + retv
+            this.imageKey+=1
+        })
+      } else {
+        GeneratePsP(anno).then((res)=>{
+            let retv = res.data
+            this.generatedImg = "data:image/jpeg;base64," + retv
+            this.imageKey+=1
+        })
+      }
+      
+    },
+    canvasData2Anno(ctxArray, w) {
+      const delta = 4
+      const rgbArray = []
+      let row = []
+
+      for (let i = 0; i < ctxArray.length; i = i + delta) {
+        let temp = []
+        if (ctxArray[i] == 208 && ctxArray[i + 1] == 208 && ctxArray[i + 2]==208) {
+          temp = [0, 0, 0]
+        } else {
+          temp = [ctxArray[i], ctxArray[i + 1], ctxArray[i + 2]]
+        }
+        row.push(temp)
+        if(row.length == w) {
+          rgbArray.push(row)
+          row = []
+        }
+      }
+
+      return rgbArray
+    },
   }
 }
 
