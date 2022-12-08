@@ -1,7 +1,13 @@
+import sys
+
+sys.path.append("LandscapePainter/")
+
+import os
+
 from typing import Union, List
-from utils.setup import setupSPADE, setupPsP
-from utils.generateImage import generateImage
-from utils.utils import img2Base64
+from app.utils.setup import setupSPADE, setupPsP
+from app.utils.generateImage import generateImage
+from app.utils.utils import img2Base64
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np

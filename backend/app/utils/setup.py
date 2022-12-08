@@ -2,6 +2,7 @@ import sys
 
 sys.path.append("..")
 sys.path.append("../..")
+sys.path.append("../../..")
 
 from SPADE.model.generator import Generator
 from PsP.models.psp import pSp
