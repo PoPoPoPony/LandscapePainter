@@ -36,7 +36,6 @@ def setupSPADE():
 
 
 def setupPsP():
-    print("PsP start")
     annoTransform = getTransforms(mode='anno')
     # initial test parameters
     # test_opts = TestOptions().parse()
@@ -52,9 +51,7 @@ def setupPsP():
     test_opts['latent_mask']=None
     test_opts['resize_factors']=None
 
-    print(123)
-    ckpt = torch.load(test_opts.checkpoint_path, map_location='cpu')
-    print(456)
+    ckpt = torch.load(test_opts['checkpoint_path'], map_location='cpu')
     opts = ckpt['opts']
     opts.update(test_opts) # 應該不用vars()
     if 'learn_in_w' not in opts:

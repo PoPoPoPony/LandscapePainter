@@ -1,5 +1,5 @@
 from typing import Union, List
-from utils.setup import setupSPADE #, setupPsP
+from utils.setup import setupSPADE, setupPsP
 from utils.generateImage import generateImage
 from utils.utils import img2Base64
 from fastapi import FastAPI
@@ -7,10 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 from PIL import Image
 
-print(8709)
+
 # setup models
 SPADE_info = setupSPADE()
-# PsP_info = setupPsP()
+PsP_info = setupPsP()
 
 print("complete!")
 
