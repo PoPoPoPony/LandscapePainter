@@ -20,7 +20,7 @@
         <el-col :span="12">
           <el-radio-group v-model="penColor" :fill="penColor">
             <el-radio-button label="rgb(110,39,204)" border>Tree</el-radio-button>
-            <el-radio-button label="rgb(30,145,153)" border>snow</el-radio-button>
+            <el-radio-button label="rgb(30,145,153)" border>ground</el-radio-button>
             <el-radio-button label="rgb(80,80,182)" border>river</el-radio-button>
             <el-radio-button label="rgb(60,74,51)" border>mountain</el-radio-button>
             <el-radio-button label="rgb(90,116,85)" border>sky</el-radio-button>
