@@ -6,7 +6,7 @@ from torch.utils.data import Dataset
 from PIL import Image
 import glob
 import pandas as pd
-from datasets.utils import getTransforms, RGBAnno2Mask
+from PsP.datasets.utils import getTransforms, RGBAnno2Mask
 import pickle
 from tqdm import tqdm
 
@@ -78,7 +78,7 @@ class ADE20KDS(Dataset):
             df.to_csv('mappingfiles/Name2Idx.csv', encoding="UTF-8", index=False)
 
 
-
+        print("mapping file loaded!")
         df = pd.read_csv('mappingfiles/Name2Idx.csv', encoding="UTF-8")
         mappingDict = dict(df.loc[:, 'OriginalIdx':'NewIdx'].to_dict('split')['data'])
 

@@ -13,13 +13,13 @@ import torch.nn.functional as F
 from utils import common, train_utils
 from criteria import id_loss, w_norm, moco_loss
 from configs import data_configs
-from datasets.images_dataset import ImagesDataset, ADE20KDS
+from PsP.datasets.images_dataset import ImagesDataset, ADE20KDS
 from criteria.lpips.lpips import LPIPS
 from models.psp import pSp
 from training.ranger import Ranger
 
 from torchsummary import summary
-from datasets.utils import convertAnnoTensor
+from PsP.datasets.utils import convertAnnoTensor
 
 class Coach:
 	def __init__(self, opts):
