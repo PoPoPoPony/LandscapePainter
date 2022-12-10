@@ -19,10 +19,10 @@
         </el-col>
         <el-col :span="12">
           <el-radio-group v-model="penColor" :fill="penColor">
-            <el-radio-button label="rgb(110,39,204)" border>Tree</el-radio-button>
-            <el-radio-button label="rgb(30,145,153)" border>ground</el-radio-button>
-            <el-radio-button label="rgb(80,80,182)" border>river</el-radio-button>
-            <el-radio-button label="rgb(60,74,51)" border>mountain</el-radio-button>
+            <el-radio-button label="rgb(110,39,96)" border>brush</el-radio-button>
+            <el-radio-button label="rgb(80,164,85)" border>ground</el-radio-button>
+            <el-radio-button label="rgb(80,216,51)" border>water</el-radio-button>
+            <el-radio-button label="rgb(60,74,191)" border>mountain</el-radio-button>
             <el-radio-button label="rgb(90,116,85)" border>sky</el-radio-button>
             <el-radio-button label="#D0D0D0" border>
               <el-icon size='12'><CloseBold /></el-icon>
@@ -59,7 +59,7 @@ export default {
     return {
       ctx: null,
       isDrawing: false,
-      penColor: "rgb(110,39,204)",
+      penColor: "rgb(110,39,96)",
       penWidth: "10",
       startPosX: null,
       startPosY: null,
@@ -111,15 +111,20 @@ export default {
       let ctx =  canvas.getContext('2d')
       ctx.lineCap = "round"
       ctx.lineJoin = "round"
-      ctx.fillStyle = "#D0D0D0"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      // ctx.fillStyle = "#D0D0D0"
+      // ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillStyle = "rgb(90,116,85)"
+      ctx.fillRect(0, 0, canvas.width,Math.floor(canvas.height/2))
+      ctx.fillStyle = "rgb(80,164,85)"
+      ctx.fillRect(0, Math.floor(canvas.height/2), canvas.width,canvas.height)
       this.ctx = ctx
       
     },
 
     onClearClick() {
-      this.ctx.fillStyle = "#D0D0D0"
-      this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasWidth)
+      // this.ctx.fillStyle = "#D0D0D0"
+      // this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasWidth)
+      this.setDefaultCanvas()
     },
 
     returnCtx() {

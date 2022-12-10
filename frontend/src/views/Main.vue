@@ -7,7 +7,7 @@
             <Painter ref='painter'/>
           </el-col>
           <el-col :span="3">
-            <el-button type="primary" style="top: 40vh; position: relative" :disabled="useModel==null" @click="this.onGenerateClick">Generate!</el-button>
+            <el-button type="primary" :loading="loading" style="top: 40vh; position: relative" :disabled="useModel==null" @click="this.onGenerateClick">Generate!</el-button>
             <el-select v-model="useModel" placeholder="Select" size="large" style="margin-top: 20px; top: 40vh; position: relativ" @change="onChangeModel">
               <el-option
                 v-for="item in options"
@@ -18,7 +18,7 @@
             </el-select>
           </el-col>
           <el-col :span="8">
-            <el-image :style="imageViewerStyle" :src="this.generatedImg" fit="fill" :key="this.imageKey"/>
+            <el-image v-loading="loading" :style="imageViewerStyle" :src="this.generatedImg" fit="fill" :key="this.imageKey"/>
           </el-col>
         </el-row>
       </el-col>
@@ -31,12 +31,16 @@
 import Painter from '@/components/Painter.vue'
 import {GenerateSPADE} from '@/apis/GenerateSPADE'
 import {GeneratePsP} from '@/apis/GeneratePsP'
+import { ref } from 'vue'
 
 
 export default {
   name: 'Main',
   components: {
     Painter
+  },
+  mounted() {
+
   },
   data() {
     return {
@@ -55,6 +59,7 @@ export default {
       imageKey: 0, // image viewer key
       imageViewerShape: null, // real shape of image viewer
       imageViewerStyle: "width: 100px; height: 100px", // default image viewer style statement
+      loading : ref(false)
     }
   },
   computed() {
@@ -63,18 +68,9 @@ export default {
   methods: {
     onChangeModel(val) {
       this.useModel = val
-      console.log(this.useModel)
-      let originalShape=0
-      if(val==0) {
-        originalShape = this.m1Shape
-      } else {
-        originalShape = this.m2Shape
-      }
-      this.imageViewerShape = Math.min(originalShape, window.innerWidth-50)
-      this.imageViewerStyle = "width: " + String(this.imageViewerShape) + "px; height: " + String(this.imageViewerShape) + "px"
-      this.imageKey+=1
     },
     onGenerateClick() {
+      this.loading = true
       let ctx = this.$refs.painter.returnCtx()
       let w = Math.min(512, window.innerWidth-50)
       let ctxArray = ctx.getImageData(0, 0, w, w)['data']
@@ -84,15 +80,25 @@ export default {
             let retv = res.data
             this.generatedImg = "data:image/jpeg;base64," + retv
             this.imageKey+=1
+            this.loading = false
         })
       } else {
         GeneratePsP(anno).then((res)=>{
             let retv = res.data
             this.generatedImg = "data:image/jpeg;base64," + retv
             this.imageKey+=1
+            this.loading = false
         })
       }
-      
+      let originalShape=0
+      if(this.useModel==0) {
+        originalShape = this.m1Shape
+      } else {
+        originalShape = this.m2Shape
+      }
+      this.imageViewerShape = Math.min(originalShape, window.innerWidth-50)
+      this.imageViewerStyle = "width: " + String(this.imageViewerShape) + "px; height: " + String(this.imageViewerShape) + "px"
+      this.imageKey+=1
     },
     canvasData2Anno(ctxArray, w) {
       const delta = 4
