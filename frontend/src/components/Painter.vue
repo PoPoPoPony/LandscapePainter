@@ -4,20 +4,20 @@
     <canvas id="sketchpad" ref="sketchpad" @mousedown="startDraw" @mousemove="drawing" @mouseup="endDraw" @touchstart="startDraw" @touchmove="drawing" @touchend="endDraw"></canvas>
     <div id="controller_container">
       <el-row id="out_row">
-        <el-col :span="10">
+        <el-col :md="6" :lg="8">
           <el-radio-group v-model="penWidth">
             <el-radio label="10" border style="margin-top: 4px">
-              <el-icon size='15'><EditPen /></el-icon>
+              <el-icon size='0.8vw'><EditPen /></el-icon>
             </el-radio>
             <el-radio label="20" border style="margin-top: 2px">
-              <el-icon size='22'><EditPen /></el-icon>
+              <el-icon size='1.2vw'><EditPen /></el-icon>
             </el-radio>
             <el-radio label="30" border>
-              <el-icon size='30'><EditPen /></el-icon>
+              <el-icon size='1.5vw'><EditPen /></el-icon>
             </el-radio>
           </el-radio-group>
         </el-col>
-        <el-col :span="12">
+        <el-col :lg="13" :md="17">
           <el-radio-group v-model="penColor" :fill="penColor">
             <el-radio-button label="rgb(110,39,96)" border>brush</el-radio-button>
             <el-radio-button label="rgb(80,164,85)" border>ground</el-radio-button>
@@ -25,11 +25,11 @@
             <el-radio-button label="rgb(60,74,191)" border>mountain</el-radio-button>
             <el-radio-button label="rgb(90,116,85)" border>sky</el-radio-button>
             <el-radio-button label="#D0D0D0" border>
-              <el-icon size='12'><CloseBold /></el-icon>
+              <el-icon size='0.7vw'><CloseBold /></el-icon>
             </el-radio-button>
           </el-radio-group>
         </el-col>
-        <el-col :span="2">
+        <el-col :lg="2" :md="1">
           <el-button type="danger" round size='large' @click="onClearClick">
             <el-icon><Delete /></el-icon>
           </el-button>
@@ -169,6 +169,21 @@ export default {
 	margin: 0 auto;
 	/* transform(translateY(- 50%)); */
 }
+
+.el-radio.is-bordered.el-radio--large {
+  padding:0 10px 0 5px
+}
+
+.el-radio {
+  margin-right: 0.9vw;
+}
+
+
+::v-deep .el-radio-button--large .el-radio-button__inner {
+  padding: 13px 0.8vw 13px 0.8vw;
+  font-size: 0.8vw;
+}
+
 
 
 /* h3 {

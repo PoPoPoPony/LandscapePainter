@@ -1,9 +1,9 @@
 <template>
   <div class="home">
     <el-row class="outer_container">
-      <el-col :span="22">
+      <el-col :span="24">
         <el-row>
-          <el-col :span="13">
+          <el-col :span="14" :lg='11'>
             <Painter ref='painter'/>
           </el-col>
           <el-col :span="3">
@@ -17,7 +17,7 @@
               />
             </el-select>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="7">
             <el-image v-loading="loading" :style="imageViewerStyle" :src="this.generatedImg" fit="fill" :key="this.imageKey"/>
           </el-col>
         </el-row>
