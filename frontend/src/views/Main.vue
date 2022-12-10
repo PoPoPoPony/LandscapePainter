@@ -58,7 +58,7 @@ export default {
       m2Shape: 512, // m2 : PsP encoder + StyleGANv2 original shape
       imageKey: 0, // image viewer key
       imageViewerShape: null, // real shape of image viewer
-      imageViewerStyle: "width: 100px; height: 100px", // default image viewer style statement
+      imageViewerStyle: "width: 0px; height: 0px", // default image viewer style statement
       loading : ref(false)
     }
   },
