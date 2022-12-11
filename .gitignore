@@ -21,7 +21,7 @@ PsP/notebooks
 
 SPADE_ckpt/*.pt
 PsP_ckpt/*.pt
-
+ckpts.zip
 
 testfolder/
 

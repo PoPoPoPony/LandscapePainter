@@ -8,8 +8,8 @@ services:
     build:
       context: .
 
-    # image: popopopony/ccclub2022fall_frontend:v1
-    image: docker_vue_nginx
+    image: popopopony/ccclub2022fall_frontend:v1
+    # image: docker_vue_nginx
 
     container_name: frontend
 
@@ -28,8 +28,8 @@ services:
     # environment:
     #   path: ../opt/conda/lib/python3.9/site-packages/Ninja
 
-    # image: popopopony/ccclub2022fall_backend:v1
-    image: docker_fastapi
+    image: popopopony/ccclub2022fall_backend:v1
+    # image: docker_fastapi
 
     
 
