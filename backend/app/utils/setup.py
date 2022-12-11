@@ -19,9 +19,9 @@ def setupSPADE():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     annoTransform = getTransforms(mode='anno')
     g = Generator(styleSize=1399).to(device)
-    g.load_state_dict(torch.load("../SPADE_ckpt/epoche007.pt"))
+    g.load_state_dict(torch.load("SPADE_ckpt/epoche007.pt"))
 
-    df = pd.read_csv('../SPADE/mappingfiles/Name2Idx.csv', encoding="UTF-8")
+    df = pd.read_csv('SPADE/mappingfiles/Name2Idx.csv', encoding="UTF-8")
     mappingDict = dict(df.loc[:, 'OriginalIdx':'NewIdx'].to_dict('split')['data'])
 
     obj = {
@@ -41,7 +41,7 @@ def setupPsP():
     # initial test parameters
     # test_opts = TestOptions().parse()
     test_opts = {}
-    test_opts['checkpoint_path']="../PsP_ckpt/iteration_200000.pt"
+    test_opts['checkpoint_path']="PsP_ckpt/iteration_200000.pt"
     test_opts['test_batch_size']=1
     test_opts['test_workers']=1
     test_opts['couple_outputs'] = False
@@ -55,23 +55,20 @@ def setupPsP():
     ckpt = torch.load(test_opts['checkpoint_path'], map_location='cpu')
     opts = ckpt['opts']
     opts.update(test_opts) # 應該不用vars()
-    if 'learn_in_w' not in opts:
-        opts['learn_in_w'] = False
-    if 'output_size' not in opts:
-        opts['output_size'] = 1024
+    opts['learn_in_w'] = False
     opts = Namespace(**opts)
 
     net = pSp(opts) # load wights while initializing the pSp
     net.eval()
     net.cuda()
 
-    df = pd.read_csv('../SPADE/mappingfiles/Name2Idx.csv', encoding="UTF-8")
+    df = pd.read_csv('SPADE/mappingfiles/Name2Idx.csv', encoding="UTF-8")
     mappingDict = dict(df.loc[:, 'OriginalIdx':'NewIdx'].to_dict('split')['data'])
 
     obj = {
         "modelName": "PsP",
         "model": net,
-        # "transform": annoTransform,
+        "transform": annoTransform,
         "mappingDict": mappingDict
     }
 

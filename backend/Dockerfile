@@ -1,5 +1,5 @@
 # FROM nvidia/cuda:11.7.0-base-ubuntu20.04
-FROM amoxley/stylegan2-ada-pytorch:cuda11.1-2
+FROM pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
 
 WORKDIR /code
 
@@ -13,8 +13,9 @@ COPY ./requirements.txt /code/requirements.txt
 # RUN apt install -y python3-pip
 # RUN apt-get -y install python3-pip
 
-# COPY ./cpp_extension.py ../opt/conda/lib/python3.9/site-packages/torch/utils/
-RUN pip install --upgrade -r /code/requirements.txt
+# ADD ./cpp_extension.py ../opt/conda/lib/python3.9/site-packages/torch/utils/
+RUN pip install --no-cache --upgrade -r /code/requirements.txt
+RUN pip install Ninja
 # RUN python setup.py clean
 # RUN pip install torch torchvision torchaudio
 # ENV DEBIAN_FRONTEND noninteractive
@@ -61,5 +62,6 @@ COPY ./app /code/app
 
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8084"]
+# SHELL ["/bin/bash", "-c"] 
 # ENTRYPOINT /bin/bash
 

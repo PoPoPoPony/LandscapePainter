@@ -71,6 +71,14 @@ export default {
     },
     onGenerateClick() {
       this.loading = true
+      let originalShape=0
+      if(this.useModel==0) {
+        originalShape = this.m1Shape
+      } else {
+        originalShape = this.m2Shape
+      }
+      this.imageViewerShape = Math.min(originalShape, window.innerWidth-50)
+      this.imageViewerStyle = "width: " + String(this.imageViewerShape) + "px; height: " + String(this.imageViewerShape) + "px"
       let ctx = this.$refs.painter.returnCtx()
       let w = Math.min(512, window.innerWidth-50)
       let ctxArray = ctx.getImageData(0, 0, w, w)['data']
@@ -90,15 +98,7 @@ export default {
             this.loading = false
         })
       }
-      let originalShape=0
-      if(this.useModel==0) {
-        originalShape = this.m1Shape
-      } else {
-        originalShape = this.m2Shape
-      }
-      this.imageViewerShape = Math.min(originalShape, window.innerWidth-50)
-      this.imageViewerStyle = "width: " + String(this.imageViewerShape) + "px; height: " + String(this.imageViewerShape) + "px"
-      this.imageKey+=1
+      
     },
     canvasData2Anno(ctxArray, w) {
       const delta = 4
