@@ -2,18 +2,25 @@ import sys
 
 sys.path.append("LandscapePainter/")
 
+
 import os
+os.environ["PATH"] = os.environ["PATH"] + "/opt/conda/lib/python3.9/site-packages/ninja"
+# os.system('cd ~/.cache/torch_extensions/fused')
+# os.system('ninja')
+
 
 from typing import Union, List
 from app.utils.setup import setupSPADE, setupPsP
+# from app.utils.setup import setupPsP
 from app.utils.generateImage import generateImage
 from app.utils.utils import img2Base64
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
 from PIL import Image
+import torch 
 
-
+print(torch.cuda.is_available())
 # setup models
 SPADE_info = setupSPADE()
 PsP_info = setupPsP()

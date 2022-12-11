@@ -10,7 +10,7 @@ import torch
 from SPADE.utils import getTransforms
 import pandas as pd
 # import os
-# from PsP.options.test_options import TestOptions
+from PsP.options.test_options import TestOptions
 from argparse import Namespace
 
 
@@ -71,7 +71,7 @@ def setupPsP():
     obj = {
         "modelName": "PsP",
         "model": net,
-        "transform": annoTransform,
+        # "transform": annoTransform,
         "mappingDict": mappingDict
     }
 

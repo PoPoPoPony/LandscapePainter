@@ -16,7 +16,9 @@
 FROM node:14 AS builder
 WORKDIR /app
 COPY . .
-RUN yarn install && yarn build
+# RUN yarn install && yarn build
+RUN npm install && npm run build
+
 
 
 
@@ -27,4 +29,4 @@ RUN rm -rf ./*
 COPY --from=builder /app/dist .
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 
-EXPOSE 8083
+EXPOSE 80
