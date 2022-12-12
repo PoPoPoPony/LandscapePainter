@@ -5,6 +5,7 @@ sys.path.append("LandscapePainter/")
 
 import os
 os.environ["PATH"] = os.environ["PATH"] + "/opt/conda/lib/python3.9/site-packages/ninja"
+os.environ['CUDA_LAUNCH_BLOCKING']='1'
 # os.system('cd ~/.cache/torch_extensions/fused')
 # os.system('ninja')
 
