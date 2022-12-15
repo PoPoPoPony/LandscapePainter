@@ -88,7 +88,7 @@ Before using docker, the WSL2 needs to be prepared.
 
 1. Allow these features and reboost your computer(「控制台」→「 程式集」→「開啟或關閉 Windows 功能」中，勾選其中兩項功能「Windows 子系統 Linux 版」與「虛擬機器平台」)
 
-    ![](posters/setting_up_windows.png =50%x)
+    ![](posters/setting_up_windows.png)
 
 2. Install the WSL 
 * Open the PowerShell with the admin, and enter : 
