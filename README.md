@@ -6,7 +6,7 @@
 > We provide a web application to transfer the image from a segmentation map to a photorealistic image. In the application, you can choose the  SPADE or the PsP encoder with StyleGANv2 to generate your painting. We also provide the docker images and the checkpoint files that can quickly build the application on your own. 
 
 <p align="center">
-<img src="posters/demo.gif" height="300px"/>
+<img src="posters/demo.gif"/>
 </p>
 <div style='text-align: center'>By default, we only provid 5 classes to draw. You can reference the <a href="https://groups.csail.mit.edu/vision/datasets/ADE20K/">ADE20K</a> document if you want to change the class.<p><b>(Note that the drawing color is equal to the label color in ADE20K)</b></div>
 
