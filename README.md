@@ -5,7 +5,7 @@
 > We provide a web application to transfer the image from a segmentation map to a photorealistic image. In the application, you can choose the SPADE or the PsP encoder with StyleGANv2 to generate your painting. We also provide the docker images and the checkpoint files that can build the application quickly on your own. 
 
 ![](posters/demo.gif)
-<div style='text-align: center'>By default, we only provide 5 classes to draw. If you want to change the class, you can reference the <a href="https://groups.csail.mit.edu/vision/datasets/ADE20K/">ADE20K</a> document. <p><b>(Note that the drawing color is equal to the label color in ADE20K)</b></div>
+<div style='text-align: center'>By default, we only provide 5 classes to draw. If you want to change the class, you can refer to the <a href="https://groups.csail.mit.edu/vision/datasets/ADE20K/">ADE20K</a> document. <p><b>(Note that the drawing color is equal to the label color in ADE20K)</b></div>
 
 ## Table of Contents
 - [Landscape Painter](#landscape-painter)
@@ -77,7 +77,7 @@ docker-compose up
 nvidia-smi
 ```
 
-You can skip this part if the infomation of GPU driver shows successfully.
+You can skip this part if the information of GPU driver shows successfully.
 ![](posters/nvidia-smi.png)
 
 2. Go <a href="https://www.nvidia.com/zh-tw/geforce/drivers/">here</a> to check your GPU version and download the driver. You may need to reboost your computer.
@@ -138,7 +138,7 @@ docker run --rm --gpus all nvidia/cuda:11.0.3-base-ubuntu20.04 nvidia-smi
 | SPADE       | Modules for SPADE  |
 | backend  | Backend based on FastAPI  |
 | frontend   | Frontend based on Vue and Element-plus3     |
-| &boxv;&nbsp;&boxv;&nbsp;&boxvr;&nbsp; Painter.vue <img width=200> | Setting up the painter. <br> If you want the change the class, please modify this file. |
+| &boxv;&nbsp;&boxv;&nbsp;&boxvr;&nbsp; Painter.vue <img width=200> | Setting up the painter. <br> If you want to change the class, please modify this file. |
 | posters   | Images in github readme     |
 | stylegan2-pytorch   | Modules for training StyleGANv2 <br> The code is clone from <a href="https://github.com/rosinality/stylegan2-pytorch">rosinality's implementation</a>    |
 | webcrawler_sophie   | Web crawler scripts provided by sophie     |
