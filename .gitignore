@@ -1,12 +1,7 @@
 
 SPADE/ADE20K Outdoors/
-SPADE/CheckPt/
-SPADE/images/
-SPADE/loss/
-
-
 SPADE/ADE20K_2021_17_01/
-SPADE/full_ADE20K/
+SPADE/pony8674312_1f39912f.zip
 SPADE/sub_ADE20K_1/
 
 OST300/
@@ -16,9 +11,22 @@ landscape/
 DeepLabV3/
 
 
+PsP/exp*
+PsP/ADE20K_2021_17_01
+PsP/ade20koutdoor
+PsP/styleGAN_ckpt
+PsP/pretrained_psp
+PsP/pretrained_models
+PsP/notebooks
 
+SPADE_ckpt/*.pt
+PsP_ckpt/*.pt
+ckpts.zip
 
+testfolder/
 
+coco.zip
+coco2017/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

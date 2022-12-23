@@ -1,0 +1,57 @@
+version: '3.7'
+
+networks:
+  ccClub2022fall:
+
+services:
+  frontend:
+    build:
+      context: .
+
+    image: popopopony/ccclub2022fall_frontend:v1
+    # image: docker_vue_nginx
+
+    container_name: frontend
+
+    ports: 
+    - "8083:80"
+
+    networks:
+    - ccClub2022fall
+
+    volumes:
+    - ./:/code
+
+  backend:
+    build:
+      context: .
+    # environment:
+    #   path: ../opt/conda/lib/python3.9/site-packages/Ninja
+
+    image: popopopony/ccclub2022fall_backend:v1
+    # image: docker_fastapi
+
+    
+
+    container_name: backend
+
+    ports: 
+    - "8084:8084"
+
+    networks:
+    - ccClub2022fall
+
+
+    volumes:
+    - ./SPADE:/code/SPADE
+    - ./SPADE_ckpt:/code/SPADE_ckpt
+    - ./PsP:/code/PsP
+    - ./PsP_ckpt:/code/PsP_ckpt
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
